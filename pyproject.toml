@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "atlas-nlp"
+version = "0.1.0"
+description = "Multilingual Moroccan telecom support intelligence"
+requires-python = ">=3.11,<3.13"
+dependencies = ["pydantic>=2.10,<3"]
+
+[dependency-groups]
+analysis = ["matplotlib>=3.10,<4"]
+deep-learning = ["tensorflow-cpu>=2.20,<2.22"]
+dev = ["pytest>=8,<10","ruff>=0.11,<1","mypy>=1.15,<2","httpx>=0.28,<1"]
+serving = [{include-group = "training"},"fastapi>=0.115,<1","prometheus-client>=0.21,<1","uvicorn>=0.34,<1"]
+tracking = ["alembic>=1.14,<2","mlflow-skinny>=3,<4","sqlalchemy>=2,<3"]
+training = ["joblib>=1.4,<2","numpy>=2,<2.4","scikit-learn>=1.6,<2","scipy>=1.15,<2"]
+transformer = ["torch>=2.6,<3","transformers>=4.48,<5"]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/atlas"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["neural: TensorFlow model integration checks"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E","F","I","UP","B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*","scipy.*","joblib","tensorflow.*","torch","transformers.*"]
+ignore_missing_imports = true
